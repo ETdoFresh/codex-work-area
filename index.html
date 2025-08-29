@@ -278,11 +278,32 @@
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           cell = size / GRID;
           draw();
+          positionDpad();
         }
         window.addEventListener('resize', () => {
           dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
           resize();
         });
+
+        function positionDpad() {
+          if (dpad.hidden) return;
+          const rect = stage.getBoundingClientRect();
+          const pad = 10;
+          const size = dpad.offsetWidth;
+          if (window.innerWidth - rect.right >= size + pad) {
+            dpad.style.position = 'fixed';
+            dpad.style.left = rect.right + pad + 'px';
+            dpad.style.top = rect.bottom - size - pad + 'px';
+            dpad.style.right = '';
+            dpad.style.bottom = '';
+          } else {
+            dpad.style.position = 'absolute';
+            dpad.style.right = pad + 'px';
+            dpad.style.bottom = pad + 'px';
+            dpad.style.left = '';
+            dpad.style.top = '';
+          }
+        }
 
         // Helpers
         function randInt(n) { return Math.floor(Math.random() * n); }
