@@ -167,6 +167,11 @@
       /* Header help button */
       .help-btn { cursor: pointer; }
 
+      body.playing header,
+      body.playing footer {
+        display: none;
+      }
+
       footer {
         color: var(--muted);
         text-align: center;
@@ -278,11 +283,35 @@
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           cell = size / GRID;
           draw();
+          positionDpad();
         }
         window.addEventListener('resize', () => {
           dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
           resize();
         });
+
+        function positionDpad() {
+          if (dpad.hidden) return;
+          const rect = stage.getBoundingClientRect();
+          const dRect = dpad.getBoundingClientRect();
+          const spaceRight = window.innerWidth - rect.right;
+          const spaceBottom = window.innerHeight - rect.bottom;
+
+          dpad.style.left = '';
+          dpad.style.transform = '';
+
+          if (spaceRight > dRect.width + 20) {
+            dpad.style.right = -(dRect.width + 10) + 'px';
+            dpad.style.bottom = '0';
+          } else if (spaceBottom > dRect.height + 20) {
+            dpad.style.right = 'auto';
+            dpad.style.bottom = -(dRect.height + 10) + 'px';
+            dpad.style.left = (rect.width - dRect.width) / 2 + 'px';
+          } else {
+            dpad.style.right = '10px';
+            dpad.style.bottom = '10px';
+          }
+        }
 
         // Helpers
         function randInt(n) { return Math.floor(Math.random() * n); }
@@ -315,6 +344,7 @@
           $speed.textContent = 'Speed: ' + (BASE_INTERVAL / interval).toFixed(1) + 'x';
           setOverlay(false);
           document.body.classList.add('playing');
+          positionDpad();
           draw();
         }
 
@@ -324,6 +354,7 @@
           setOverlay(paused, paused ? 'Paused' : '', paused ? 'Press Space to resume' : '');
           if (paused) document.body.classList.remove('playing');
           else document.body.classList.add('playing');
+          positionDpad();
         }
 
         // Input
@@ -412,6 +443,7 @@
           paused = true;
           setOverlay(true, 'Game Over', 'Press R to restart');
           document.body.classList.remove('playing');
+          positionDpad();
           draw(true);
         }
 
